@@ -585,4 +585,9 @@ if __name__ == '__main__':
     # Tạo templates khi chạy
     create_templates()
     
-    app.run(debug=True, port=5000, host='0.0.0.0')
+    # Chạy với cấu hình phù hợp cho Docker
+    import os
+    port = int(os.environ.get('PORT', 5000))
+    debug = os.environ.get('FLASK_ENV') != 'production'
+
+    app.run(debug=debug, port=port, host='0.0.0.0')

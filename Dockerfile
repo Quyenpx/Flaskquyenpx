@@ -1,28 +1,21 @@
-# Sử dụng Python 3.11 slim image
-FROM python:3.11-slim
+# Sử dụng Python 3.9 image (không phải slim để tránh lỗi)
+FROM python:3.9
 
 # Thiết lập thư mục làm việc
 WORKDIR /app
 
-# Cài đặt system dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
-    default-libmysqlclient-dev \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
-
 # Copy requirements và cài đặt Python dependencies
-COPY requirements.txt .
+COPY requirements_deploy.txt requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy source code
 COPY . .
 
-# Tạo thư mục uploads
-RUN mkdir -p static/uploads
+# Tạo thư mục static nếu chưa có
+RUN mkdir -p static/css static/js templates
 
 # Thiết lập biến môi trường
-ENV FLASK_APP=app.py
+ENV FLASK_APP=app_with_templates.py
 ENV FLASK_ENV=production
 ENV PYTHONPATH=/app
 
@@ -30,4 +23,4 @@ ENV PYTHONPATH=/app
 EXPOSE 5000
 
 # Chạy ứng dụng
-CMD ["python", "app.py"]
+CMD ["python", "app_with_templates.py"]

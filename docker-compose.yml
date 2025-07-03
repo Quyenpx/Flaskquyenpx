@@ -1,71 +1,22 @@
 version: '3.8'
 
 services:
-  # MySQL Database
-  mysql:
-    image: mysql:8.0
-    container_name: multi_store_mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: multi_store_db
-      MYSQL_USER: flask_user
-      MYSQL_PASSWORD: flask_password
-    ports:
-      - "3306:3306"
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - multi_store_network
-
   # Flask Application
   web:
     build: .
-    container_name: multi_store_web
+    container_name: flask_multi_store
     restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
       - FLASK_ENV=production
-      - MYSQL_HOST=mysql
-      - MYSQL_PORT=3306
-      - MYSQL_USER=flask_user
-      - MYSQL_PASSWORD=flask_password
-      - MYSQL_DATABASE=multi_store_db
       - SECRET_KEY=your-super-secret-key-change-this-in-production
-    depends_on:
-      - mysql
     volumes:
-      - ./static/uploads:/app/static/uploads
+      - ./static:/app/static
+      - ./templates:/app/templates
     networks:
-      - multi_store_network
-    command: >
-      sh -c "
-        echo 'Waiting for MySQL to be ready...' &&
-        sleep 30 &&
-        python -c 'from app import create_app; from models import db; app = create_app(); app.app_context().push(); db.create_all(); print(\"Database initialized\")' &&
-        python app.py
-      "
-
-  # Nginx (Optional - for production)
-  nginx:
-    image: nginx:alpine
-    container_name: multi_store_nginx
-    restart: unless-stopped
-    ports:
-      - "80:80"
-    volumes:
-      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./static:/var/www/static
-    depends_on:
-      - web
-    networks:
-      - multi_store_network
-
-volumes:
-  mysql_data:
+      - flask_network
 
 networks:
-  multi_store_network:
+  flask_network:
     driver: bridge
