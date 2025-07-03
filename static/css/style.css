@@ -1,0 +1,136 @@
+/* Custom CSS cho Flask Multi Store */
+
+/* Theme colors */
+:root {
+    --theme-color: #007bff;
+    --secondary-color: #6c757d;
+}
+
+/* Hero section */
+.hero-section {
+    background: linear-gradient(135deg, var(--theme-color) 0%, #667eea 100%);
+    color: white;
+    padding: 80px 0;
+}
+
+.store-info {
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+}
+
+/* Product cards */
+.product-card {
+    transition: all 0.3s ease;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.product-image {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--theme-color);
+    border-color: var(--theme-color);
+    border-radius: 25px;
+    padding: 10px 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: var(--theme-color);
+    border-color: var(--theme-color);
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+/* Price styling */
+.price {
+    font-size: 1.3em;
+    font-weight: bold;
+    color: var(--theme-color);
+}
+
+/* Rating stars */
+.rating {
+    color: #ffc107;
+    font-size: 0.9em;
+}
+
+/* Navbar */
+.navbar-brand {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.product-card {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 40px 0;
+    }
+    
+    .display-4 {
+        font-size: 2rem;
+    }
+    
+    .store-info {
+        padding: 15px;
+    }
+    
+    .store-info .row > div {
+        margin-bottom: 10px;
+        text-align: center;
+    }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--theme-color);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #0056b3;
+}

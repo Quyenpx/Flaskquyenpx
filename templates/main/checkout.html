@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Thanh toán - {{ current_store.name }}{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">
+                <i class="fas fa-credit-card me-2"></i>Thanh toán
+            </h2>
+        </div>
+    </div>
+
+    <form method="POST" action="{{ url_for('main.place_order', store=current_store.slug) }}">
+        <div class="row">
+            <div class="col-lg-8">
+                <!-- Thông tin khách hàng -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Thông tin khách hàng</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_name" class="form-label">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="customer_phone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="customer_phone" name="customer_phone" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer_email" class="form-label">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="customer_email" name="customer_email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="customer_address" class="form-label">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="customer_address" name="customer_address" rows="3" required 
+                                      placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="notes" class="form-label">Ghi chú đơn hàng</label>
+                            <textarea class="form-control" id="notes" name="notes" rows="2" 
+                                      placeholder="Ghi chú về đơn hàng, ví dụ: thời gian giao hàng mong muốn..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phương thức thanh toán -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Phương thức thanh toán</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="cod" value="cod" checked>
+                            <label class="form-check-label" for="cod">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                <strong>Thanh toán khi nhận hàng (COD)</strong>
+                                <br>
+                                <small class="text-muted">Thanh toán bằng tiền mặt khi nhận hàng</small>
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="payment_method" id="bank_transfer" value="bank_transfer">
+                            <label class="form-check-label" for="bank_transfer">
+                                <i class="fas fa-university me-2"></i>
+                                <strong>Chuyển khoản ngân hàng</strong>
+                                <br>
+                                <small class="text-muted">Chuyển khoản trước khi giao hàng</small>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="payment_method" id="momo" value="momo">
+                            <label class="form-check-label" for="momo">
+                                <i class="fas fa-mobile-alt me-2"></i>
+                                <strong>Ví điện tử MoMo</strong>
+                                <br>
+                                <small class="text-muted">Thanh toán qua ví MoMo</small>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <!-- Tóm tắt đơn hàng -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Đơn hàng của bạn</h5>
+                    </div>
+                    <div class="card-body">
+                        {% for item in cart_items %}
+                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    {% if item.product.image %}
+                                    <img src="{{ item.product.image }}" alt="{{ item.product.name }}" 
+                                         class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                    {% else %}
+                                    <div class="bg-light rounded d-flex align-items-center justify-content-center" 
+                                         style="width: 50px; height: 50px;">
+                                        <i class="fas fa-image text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 small">{{ item.product.name }}</h6>
+                                    <small class="text-muted">{{ "{:,.0f}".format(item.product.current_price) }}đ x {{ item.quantity }}</small>
+                                </div>
+                            </div>
+                            <div>
+                                <strong class="text-primary">{{ "{:,.0f}".format(item.total) }}đ</strong>
+                            </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tạm tính:</span>
+                            <span>{{ "{:,.0f}".format(cart_total) }}đ</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Phí vận chuyển:</span>
+                            <span class="text-success">Miễn phí</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between mb-4">
+                            <strong>Tổng cộng:</strong>
+                            <strong class="text-primary fs-5">{{ "{:,.0f}".format(cart_total) }}đ</strong>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-check me-2"></i>Đặt hàng
+                            </button>
+                            <a href="{{ url_for('main.cart', store=current_store.slug) }}" 
+                               class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Quay lại giỏ hàng
+                            </a>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-light rounded">
+                            <h6 class="mb-2">
+                                <i class="fas fa-shield-alt me-2 text-success"></i>Cam kết của chúng tôi
+                            </h6>
+                            <ul class="list-unstyled mb-0 small">
+                                <li><i class="fas fa-check text-success me-2"></i>Sản phẩm chất lượng</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Giao hàng nhanh chóng</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Hỗ trợ 24/7</li>
+                                <li><i class="fas fa-check text-success me-2"></i>Đổi trả dễ dàng</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Validation form
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    
+    form.addEventListener('submit', function(e) {
+        const requiredFields = form.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+        
+        // Validate email
+        const emailField = document.getElementById('customer_email');
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailField.value && !emailRegex.test(emailField.value)) {
+            emailField.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        // Validate phone
+        const phoneField = document.getElementById('customer_phone');
+        const phoneRegex = /^[0-9]{10,11}$/;
+        if (phoneField.value && !phoneRegex.test(phoneField.value.replace(/\s/g, ''))) {
+            phoneField.classList.add('is-invalid');
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Vui lòng điền đầy đủ và chính xác thông tin bắt buộc');
+        } else {
+            // Hiển thị loading
+            const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
+            submitBtn.disabled = true;
+        }
+    });
+    
+    // Remove invalid class when user types
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+});
+</script>
+{% endblock %}
